@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../controllers/directions/directions.dart';
@@ -20,7 +21,6 @@ class _DirectionsScreenState extends ConsumerState<DirectionsScreen> {
 
     const origin = '吉祥寺駅';
     const destination = '上石神井駅';
-    const apiKey = "AIzaSyDepeW7Aff-rAasSMRlPVR_KZOlcUYqoLw";
 
     return Scaffold(
       appBar: AppBar(title: const Text('徒歩ルート')),
@@ -28,7 +28,7 @@ class _DirectionsScreenState extends ConsumerState<DirectionsScreen> {
         children: [
           ElevatedButton(
             onPressed: () async {
-              await notifier.fetch(origin: origin, destination: destination, apiKey: apiKey);
+              await notifier.fetch(origin: origin, destination: destination, apiKey: dotenv.env['GOOGLE_API_KEY']!);
 
               final state = ref.read(directionsProvider); // 最新状態を取得
               if (state != null) {
