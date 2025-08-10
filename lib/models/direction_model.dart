@@ -92,13 +92,13 @@ class Bounds {
 
   factory Bounds.fromJson(Map<String, dynamic> json) {
     return Bounds(
-      northeast: LatLng.fromJson(json['northeast'] as Map<String, dynamic>),
-      southwest: LatLng.fromJson(json['southwest'] as Map<String, dynamic>),
+      northeast: LatLngModel.fromJson(json['northeast'] as Map<String, dynamic>),
+      southwest: LatLngModel.fromJson(json['southwest'] as Map<String, dynamic>),
     );
   }
 
-  final LatLng northeast;
-  final LatLng southwest;
+  final LatLngModel northeast;
+  final LatLngModel southwest;
 }
 
 //////////////////////////////////////////////////////////
@@ -117,22 +117,22 @@ class Leg {
   factory Leg.fromJson(Map<String, dynamic> json) {
     return Leg(
       distance: Distance.fromJson(json['distance'] as Map<String, dynamic>),
-      duration: Duration.fromJson(json['duration'] as Map<String, dynamic>),
+      duration: DurationModel.fromJson(json['duration'] as Map<String, dynamic>),
       endAddress: json['end_address'].toString(),
-      endLocation: LatLng.fromJson(json['end_location'] as Map<String, dynamic>),
+      endLocation: LatLngModel.fromJson(json['end_location'] as Map<String, dynamic>),
       startAddress: json['start_address'].toString(),
-      startLocation: LatLng.fromJson(json['start_location'] as Map<String, dynamic>),
+      startLocation: LatLngModel.fromJson(json['start_location'] as Map<String, dynamic>),
       // ignore: always_specify_types
       steps: (json['steps'] as List).map((e) => Step.fromJson(e as Map<String, dynamic>)).toList(),
     );
   }
 
   final Distance distance;
-  final Duration duration;
+  final DurationModel duration;
   final String endAddress;
-  final LatLng endLocation;
+  final LatLngModel endLocation;
   final String startAddress;
-  final LatLng startLocation;
+  final LatLngModel startLocation;
   final List<Step> steps;
 }
 
@@ -153,22 +153,22 @@ class Step {
   factory Step.fromJson(Map<String, dynamic> json) {
     return Step(
       distance: Distance.fromJson(json['distance'] as Map<String, dynamic>),
-      duration: Duration.fromJson(json['duration'] as Map<String, dynamic>),
-      endLocation: LatLng.fromJson(json['end_location'] as Map<String, dynamic>),
+      duration: DurationModel.fromJson(json['duration'] as Map<String, dynamic>),
+      endLocation: LatLngModel.fromJson(json['end_location'] as Map<String, dynamic>),
       htmlInstructions: json['html_instructions'].toString(),
       polyline: Polyline.fromJson(json['polyline'] as Map<String, dynamic>),
-      startLocation: LatLng.fromJson(json['start_location'] as Map<String, dynamic>),
+      startLocation: LatLngModel.fromJson(json['start_location'] as Map<String, dynamic>),
       travelMode: json['travel_mode'].toString(),
       maneuver: json['maneuver'].toString(),
     );
   }
 
   final Distance distance;
-  final Duration duration;
-  final LatLng endLocation;
+  final DurationModel duration;
+  final LatLngModel endLocation;
   final String htmlInstructions;
   final Polyline polyline;
-  final LatLng startLocation;
+  final LatLngModel startLocation;
   final String travelMode;
   final String? maneuver;
 }
@@ -188,11 +188,11 @@ class Distance {
 
 //////////////////////////////////////////////////////////
 
-class Duration {
-  Duration({required this.text, required this.value});
+class DurationModel {
+  DurationModel({required this.text, required this.value});
 
-  factory Duration.fromJson(Map<String, dynamic> json) {
-    return Duration(text: json['text'].toString(), value: json['value'].toString().toInt());
+  factory DurationModel.fromJson(Map<String, dynamic> json) {
+    return DurationModel(text: json['text'].toString(), value: json['value'].toString().toInt());
   }
 
   final String text;
@@ -201,11 +201,11 @@ class Duration {
 
 //////////////////////////////////////////////////////////
 
-class LatLng {
-  LatLng({required this.lat, required this.lng});
+class LatLngModel {
+  LatLngModel({required this.lat, required this.lng});
 
-  factory LatLng.fromJson(Map<String, dynamic> json) {
-    return LatLng(lat: json['lat'].toString().toDouble(), lng: json['lng'].toString().toDouble());
+  factory LatLngModel.fromJson(Map<String, dynamic> json) {
+    return LatLngModel(lat: json['lat'].toString().toDouble(), lng: json['lng'].toString().toDouble());
   }
 
   final double lat;
