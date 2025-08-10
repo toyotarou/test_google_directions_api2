@@ -3,6 +3,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../controllers/directions/directions.dart';
+import '../models/direction_model.dart';
 
 class DirectionsScreen extends ConsumerStatefulWidget {
   const DirectionsScreen({super.key, required this.origin, required this.destination});
@@ -15,34 +16,42 @@ class DirectionsScreen extends ConsumerStatefulWidget {
 }
 
 class _DirectionsScreenState extends ConsumerState<DirectionsScreen> {
-  List<Map<String, Map<String, String>>> stepLocationList = [];
+  List<Map<String, Map<String, String>>> stepLocationList = <Map<String, Map<String, String>>>[];
 
   ///
   @override
   void initState() {
     super.initState();
 
+    // ignore: always_specify_types
     Future(() async {
       await ref
           .read(directionsProvider.notifier)
           .fetch(origin: widget.origin, destination: widget.destination, apiKey: dotenv.env['GOOGLE_API_KEY']!);
 
-      final state = ref.read(directionsProvider); // 最新状態を取得
-      if (state != null) {
-        final List<Map<String, Map<String, String>>> list = [];
+      final DirectionsModel? state = ref.read(directionsProvider);
 
+      if (state != null) {
+        final List<Map<String, Map<String, String>>> list = <Map<String, Map<String, String>>>[];
+
+        // ignore: always_specify_types
         final steps = state.routes.expand((r) => r.legs).expand((l) => l.steps);
 
+        // ignore: always_specify_types
         for (final step in steps) {
-          list.add({
-            'start': {'latitude': step.startLocation.lat.toString(), 'longitude': step.startLocation.lng.toString()},
-            'end': {'latitude': step.endLocation.lat.toString(), 'longitude': step.endLocation.lng.toString()},
+          list.add(<String, Map<String, String>>{
+            'start': <String, String>{
+              'latitude': step.startLocation.lat.toString(),
+              'longitude': step.startLocation.lng.toString(),
+            },
+            'end': <String, String>{
+              'latitude': step.endLocation.lat.toString(),
+              'longitude': step.endLocation.lng.toString(),
+            },
           });
         }
 
-        setState(() {
-          stepLocationList = list;
-        });
+        setState(() => stepLocationList = list);
       }
     });
   }
@@ -50,74 +59,27 @@ class _DirectionsScreenState extends ConsumerState<DirectionsScreen> {
   ///
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(directionsProvider);
-    //    final notifier = ref.read(directionsProvider.notifier);
-
-    // const origin = '吉祥寺駅';
-    // const destination = '上石神井駅';
+    ref.watch(directionsProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('徒歩ルート')),
       body: Column(
-        children: [
-          /*
-
-
-
-          ElevatedButton(
-            onPressed: () async {
-
-              await ref
-                  .read(directionsProvider.notifier)
-                  .fetch(origin: widget.origin, destination: widget.destination, apiKey: dotenv.env['GOOGLE_API_KEY']!);
-
-              final state = ref.read(directionsProvider); // 最新状態を取得
-              if (state != null) {
-                final List<Map<String, Map<String, String>>> list = [];
-
-                final steps = state.routes.expand((r) => r.legs).expand((l) => l.steps);
-
-                for (final step in steps) {
-                  list.add({
-                    'start': {
-                      'latitude': step.startLocation.lat.toString(),
-                      'longitude': step.startLocation.lng.toString(),
-                    },
-                    'end': {'latitude': step.endLocation.lat.toString(), 'longitude': step.endLocation.lng.toString()},
-                  });
-                }
-
-                setState(() {
-                  stepLocationList = list;
-                });
-              }
-
-            },
-            child: const Text('ルート取得'),
-          ),
-          const SizedBox(height: 10),
-
-
-
-
-
-
-          */
+        children: <Widget>[
           Expanded(
             child: stepLocationList.isEmpty
                 ? const Center(child: Text('データ未取得'))
                 : ListView.builder(
                     itemCount: stepLocationList.length,
-                    itemBuilder: (context, index) {
-                      final item = stepLocationList[index];
-                      final start = item['start']!;
-                      final end = item['end']!;
+                    itemBuilder: (BuildContext context, int index) {
+                      final Map<String, Map<String, String>> item = stepLocationList[index];
+                      final Map<String, String> start = item['start']!;
+                      final Map<String, String> end = item['end']!;
 
                       return Padding(
                         padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
+                          children: <Widget>[
                             Text(
                               '${index + 1}    start    lat: ${start['latitude']}, lng: ${start['longitude']}',
                               style: const TextStyle(fontSize: 14),
