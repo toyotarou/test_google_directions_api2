@@ -11,6 +11,7 @@ import '../../controllers/directions/directions.dart';
 import '../../extensions/extensions.dart';
 import '../../models/direction_model.dart';
 import '../../utility/tile_provider.dart';
+import '../../utility/utility.dart';
 
 class DirectionsMapAlert extends ConsumerStatefulWidget {
   const DirectionsMapAlert({super.key, required this.origin, required this.destination});
@@ -41,17 +42,9 @@ class _DirectionsMapAlertState extends ConsumerState<DirectionsMapAlert> with Co
 
   double? currentZoom;
 
-  // List<Marker> markerList = <Marker>[];
-  //
-  // final List<OverlayEntry> _firstEntries = <OverlayEntry>[];
-  // final List<OverlayEntry> _secondEntries = <OverlayEntry>[];
-  //
-  // List<LatLng> latLngList = <LatLng>[];
-  //
-  // List<LatLng> polygonPoints = <LatLng>[];
-  //
-  // double centerLat = 0.0;
-  // double centerLng = 0.0;
+  Utility utility = Utility();
+
+  List<LatLng> latLngList = <LatLng>[];
 
   ///
   @override
@@ -118,12 +111,6 @@ class _DirectionsMapAlertState extends ConsumerState<DirectionsMapAlert> with Co
             FlutterMap(
               mapController: mapController,
               options: MapOptions(
-                // initialCenter: (monthlyGeolocList.isNotEmpty)
-                //     ? LatLng(monthlyGeolocList[0].latitude.toDouble(), monthlyGeolocList[0].longitude.toDouble())
-                //     : const LatLng(35.718532, 139.586639),
-                //
-                //
-                //
                 initialCenter: const LatLng(35.718532, 139.586639),
 
                 initialZoom: currentZoomEightTeen,
@@ -141,24 +128,10 @@ class _DirectionsMapAlertState extends ConsumerState<DirectionsMapAlert> with Co
                   userAgentPackageName: 'com.example.app',
                 ),
 
-                // MarkerLayer(markers: markerList),
-                //
-                // if (polygonPoints.isNotEmpty) ...<Widget>[
-                //   // ignore: always_specify_types
-                //   PolygonLayer(
-                //     polygons: <Polygon<Object>>[
-                //       // ignore: always_specify_types
-                //       Polygon(
-                //         points: polygonPoints,
-                //         color: Colors.purpleAccent.withValues(alpha: 0.2),
-                //         borderColor: Colors.purpleAccent.withValues(alpha: 0.4),
-                //         borderStrokeWidth: 2,
-                //       ),
-                //     ],
-                //   ),
-                // ],
-                //
-                //
+                if (stepLocationList.isNotEmpty) ...<Widget>[
+                  // ignore: always_specify_types
+                  PolylineLayer(polylines: makeTransportationPolyline()),
+                ],
               ],
             ),
 
@@ -206,73 +179,24 @@ class _DirectionsMapAlertState extends ConsumerState<DirectionsMapAlert> with Co
 
   ///
   void makeMinMaxLatLng() {
-    // selectedGeolocList.clear();
-    //
-    //
-    //
-
     latList.clear();
     lngList.clear();
-    //
-    // latLngList.clear();
-    //
-    //
-    //
 
-    // if (appParamState.monthlyGeolocMapSelectedDateList.isNotEmpty) {
-    //   for (final String element in appParamState.monthlyGeolocMapSelectedDateList) {
-    //     appParamState.keepGeolocMap[element]?.forEach((GeolocModel element2) {
-    //       selectedGeolocList.add(element2);
-    //
-    //       latList.add(element2.latitude.toDouble());
-    //       lngList.add(element2.longitude.toDouble());
-    //
-    //       latLngList.add(LatLng(element2.latitude.toDouble(), element2.longitude.toDouble()));
-    //     });
-    //   }
-    // }
+    latLngList.clear();
 
     for (final Map<String, Map<String, String>> element in stepLocationList) {
       element.forEach((String key, Map<String, String> value) {
         latList.add((value['latitude'] != null) ? value['latitude'].toString().toDouble() : 0);
         lngList.add((value['longitude'] != null) ? value['longitude'].toString().toDouble() : 0);
+
+        latLngList.add(LatLng(value['latitude'].toString().toDouble(), value['longitude'].toString().toDouble()));
       });
     }
 
     latList = latList.toSet().toList();
     lngList = lngList.toSet().toList();
 
-    /*
-
-
-
-
-
-                          // ignore: always_specify_types
-                          for (final step in steps) {
-                            list.add(<String, Map<String, String>>{
-                              'start': <String, String>{
-                                'latitude': step.startLocation.lat.toString(),
-                                'longitude': step.startLocation.lng.toString(),
-                              },
-                              'end': <String, String>{
-                                'latitude': step.endLocation.lat.toString(),
-                                'longitude': step.endLocation.lng.toString(),
-                              },
-                            });
-                          }
-                          */
-
     if (latList.isNotEmpty && lngList.isNotEmpty) {
-      // polygonPoints = utility.getBoundingBoxPoints(selectedGeolocList);
-      //
-      // centerLat = (polygonPoints[0].latitude + polygonPoints[2].latitude) / 2;
-      // centerLng = (polygonPoints[0].longitude + polygonPoints[2].longitude) / 2;
-      //
-      //
-      //
-      //
-
       minLat = latList.reduce(min);
       maxLat = latList.reduce(max);
       minLng = lngList.reduce(min);
@@ -303,5 +227,14 @@ class _DirectionsMapAlertState extends ConsumerState<DirectionsMapAlert> with Co
 
       appParamNotifier.setCurrentZoom(zoom: newZoom);
     }
+  }
+
+  ///
+  // ignore: always_specify_types
+  List<Polyline> makeTransportationPolyline() {
+    final List<Color> twelveColor = utility.getTwelveColor();
+
+    // ignore: always_specify_types
+    return <Polyline<Object>>[Polyline(points: latLngList, color: twelveColor[0], strokeWidth: 5)];
   }
 }
