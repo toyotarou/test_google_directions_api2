@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../controllers/controllers_mixin.dart';
 import '../controllers/directions/directions.dart';
 import '../models/direction_model.dart';
 
@@ -15,7 +16,7 @@ class DirectionsScreen extends ConsumerStatefulWidget {
   ConsumerState<DirectionsScreen> createState() => _DirectionsScreenState();
 }
 
-class _DirectionsScreenState extends ConsumerState<DirectionsScreen> {
+class _DirectionsScreenState extends ConsumerState<DirectionsScreen> with ControllersMixin<DirectionsScreen> {
   List<Map<String, Map<String, String>>> stepLocationList = <Map<String, Map<String, String>>>[];
 
   ///
@@ -25,9 +26,11 @@ class _DirectionsScreenState extends ConsumerState<DirectionsScreen> {
 
     // ignore: always_specify_types
     Future(() async {
-      await ref
-          .read(directionsProvider.notifier)
-          .fetch(origin: widget.origin, destination: widget.destination, apiKey: dotenv.env['GOOGLE_API_KEY']!);
+      await directionsNotifier.fetch(
+        origin: widget.origin,
+        destination: widget.destination,
+        apiKey: dotenv.env['GOOGLE_API_KEY']!,
+      );
 
       final DirectionsModel? state = ref.read(directionsProvider);
 
