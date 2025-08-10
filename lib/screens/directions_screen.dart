@@ -5,7 +5,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../controllers/directions/directions.dart';
 
 class DirectionsScreen extends ConsumerStatefulWidget {
-  const DirectionsScreen({super.key});
+  const DirectionsScreen({super.key, required this.origin, required this.destination});
+
+  final String origin;
+  final String destination;
 
   @override
   ConsumerState<DirectionsScreen> createState() => _DirectionsScreenState();
@@ -14,21 +17,59 @@ class DirectionsScreen extends ConsumerStatefulWidget {
 class _DirectionsScreenState extends ConsumerState<DirectionsScreen> {
   List<Map<String, Map<String, String>>> stepLocationList = [];
 
+  ///
+  @override
+  void initState() {
+    super.initState();
+
+    Future(() async {
+      await ref
+          .read(directionsProvider.notifier)
+          .fetch(origin: widget.origin, destination: widget.destination, apiKey: dotenv.env['GOOGLE_API_KEY']!);
+
+      final state = ref.read(directionsProvider); // 最新状態を取得
+      if (state != null) {
+        final List<Map<String, Map<String, String>>> list = [];
+
+        final steps = state.routes.expand((r) => r.legs).expand((l) => l.steps);
+
+        for (final step in steps) {
+          list.add({
+            'start': {'latitude': step.startLocation.lat.toString(), 'longitude': step.startLocation.lng.toString()},
+            'end': {'latitude': step.endLocation.lat.toString(), 'longitude': step.endLocation.lng.toString()},
+          });
+        }
+
+        setState(() {
+          stepLocationList = list;
+        });
+      }
+    });
+  }
+
+  ///
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(directionsProvider);
-    final notifier = ref.read(directionsProvider.notifier);
+    //    final notifier = ref.read(directionsProvider.notifier);
 
-    const origin = '吉祥寺駅';
-    const destination = '上石神井駅';
+    // const origin = '吉祥寺駅';
+    // const destination = '上石神井駅';
 
     return Scaffold(
       appBar: AppBar(title: const Text('徒歩ルート')),
       body: Column(
         children: [
+          /*
+
+
+
           ElevatedButton(
             onPressed: () async {
-              await notifier.fetch(origin: origin, destination: destination, apiKey: dotenv.env['GOOGLE_API_KEY']!);
+
+              await ref
+                  .read(directionsProvider.notifier)
+                  .fetch(origin: widget.origin, destination: widget.destination, apiKey: dotenv.env['GOOGLE_API_KEY']!);
 
               final state = ref.read(directionsProvider); // 最新状態を取得
               if (state != null) {
@@ -50,10 +91,18 @@ class _DirectionsScreenState extends ConsumerState<DirectionsScreen> {
                   stepLocationList = list;
                 });
               }
+
             },
             child: const Text('ルート取得'),
           ),
           const SizedBox(height: 10),
+
+
+
+
+
+
+          */
           Expanded(
             child: stepLocationList.isEmpty
                 ? const Center(child: Text('データ未取得'))

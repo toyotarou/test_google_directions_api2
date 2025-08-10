@@ -15,6 +15,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(home: DirectionsScreen());
+    return const MaterialApp(
+      home: DirectionsScreen(origin: '吉祥寺駅', destination: '上石神井駅'),
+    );
   }
 }
