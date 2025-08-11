@@ -21,10 +21,40 @@ class _HomeScreenState extends State<HomeScreen> {
               onPressed: () {
                 directionsDialog(
                   context: context,
-                  widget: const DirectionsMapAlert(origin: '東京都大田区北嶺町37-20', destination: '東京都大田区田園調布1-55-12'),
+                  widget: const DirectionsMapAlert(origin: '東京都大田区山王3-43-11', destination: '東京都大田区南馬込5-2-11'),
                 );
               },
               child: const Text('aaa'),
+            ),
+
+            ElevatedButton(
+              onPressed: () {
+                directionsDialog(
+                  context: context,
+                  widget: const DirectionsMapAlert(origin: '東京都大田区南馬込5-2-11', destination: '東京都大田区仲池上1-14-22'),
+                );
+              },
+              child: const Text('bbb'),
+            ),
+
+            ElevatedButton(
+              onPressed: () {
+                directionsDialog(
+                  context: context,
+                  widget: const DirectionsMapAlert(origin: '東京都大田区仲池上1-14-22', destination: '東京都大田区北嶺町37-20'),
+                );
+              },
+              child: const Text('ccc'),
+            ),
+
+            ElevatedButton(
+              onPressed: () {
+                directionsDialog(
+                  context: context,
+                  widget: const DirectionsMapAlert(origin: '東京都大田区北嶺町37-20', destination: '東京都大田区田園調布1-55-12'),
+                );
+              },
+              child: const Text('ddd'),
             ),
           ],
         ),
